@@ -2,11 +2,14 @@ const {GENESIS_DATA}  = require('./config');
 const cryptoHash = require('./crypto-hash');
 
 class Block{// WE are using constructor to have different initializn of data
-    constructor({timestamp, lastHash, hash ,data}){ // When using curly braces we dont have to remember the order of parameters
+    constructor({timestamp, lastHash, hash ,data, nonce ,difficulty}){ // When using curly braces we dont have to remember the order of parameters
         this.timestamp = timestamp;
         this.lastHash = lastHash;
         this.hash = hash;
         this.data = data;
+        this.nonce = nonce;
+        this.difficulty = difficulty; // difficulty is how many leadning 0 should nonce should have
+
     }
 
     static genesis(){
@@ -14,14 +17,19 @@ class Block{// WE are using constructor to have different initializn of data
     }
 
     static mineBlock({lastBlock,data}){
-        const timestamp = Date.now();
+        let hash, timestamp;
+        //const timestamp = Date.now();
         const lastHash = lastBlock.hash;
-        
-        return new this({
-            timestamp,
-            lastHash,
-            data,
-            hash: cryptoHash(timestamp,lastHash, data)//it creates a hash based on the timestamp lastHash and data. 
+        const {difficulty} = lastBlock;
+        let nonce = 0;
+        do{
+            nonce++;
+            timestamp = Date.now();
+            hash = cryptoHash(timestamp, lastHash, data, nonce, difficulty)
+        } while(hash.substring(0,difficulty)!=='0'.repeat(difficulty));
+
+        return new this({timestamp,lastHash,data,difficulty,nonce,hash
+            //cryptoHash(timestamp,lastHash, data, nonce, difficulty)//it creates a hash based on the timestamp lastHash and data. 
         });
     }
 }

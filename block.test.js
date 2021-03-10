@@ -8,13 +8,16 @@ describe('Block' ,()=> { // in describe we write the test case for the requrired
     const lastHash = 'foo-hash';
     const hash = 'bar-hash';
     const data =['blockchain','data'];
-    const block = new Block({timestamp,lastHash,hash,data});// we are sending this parameters to block.js file.
+    const nonce =1;
+    const difficulty =1;
+    const block = new Block({timestamp,lastHash,hash,data,nonce,difficulty});// we are sending this parameters to block.js file.
 
     it('has timestamp, lastHash, hash and data property',() => {
         expect(block.timestamp).toEqual(timestamp);// it checks if the data initialized in the describe block and data in the constructor in the block class are equal.
         expect(block.lastHash).toEqual(lastHash);
         expect(block.hash).toEqual(hash);
         expect(block.data).toEqual(data);
+        expect(block.difficulty).toEqual(difficulty);
     });
 
     describe('genesis()', () => {// this test is for genesis function 
@@ -50,7 +53,17 @@ describe('Block' ,()=> { // in describe we write the test case for the requrired
         });
 
         it('creates a SHA-256 `hash` based on the proper inputs', () =>{
-            expect(minedBlock.hash).toEqual(cryptoHash(minedBlock.timestamp,lastBlock.hash,data));
+            expect(minedBlock.hash).toEqual(cryptoHash(
+                minedBlock.timestamp,
+                minedBlock.nonce,
+                minedBlock.difficulty,
+                lastBlock.hash,
+                data
+                )
+            );
+        });
+        it('sets a `hash` that matches that matches the difficulty criteria', () => {
+            expect(minedBlock.hash.substring(0, minedBlock.difficulty)).toEqual('0'.repeat(minedBlock.difficulty));
         });
     });
 });
