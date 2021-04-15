@@ -1,10 +1,10 @@
 //const { genesis } = require("./block"); // it impors genesis function to const genesis
 const Block = require("./block"); // it imports the block Block class to the const Block  
-const {GENESIS_DATA} = require ('./config');// we use { GENESIS_DATA } bcoz it is exported as an object .
+const {GENESIS_DATA, MINE_RATE} = require ('./config');// we use { GENESIS_DATA } bcoz it is exported as an object .
 const cryptoHash = require('./crypto-hash');
 
 describe('Block' ,()=> { // in describe we write the test case for the requrired tests (testing  block class)
-    const timestamp = 'a-date';
+    const timestamp = 2000;
     const lastHash = 'foo-hash';
     const hash = 'bar-hash';
     const data =['blockchain','data'];
@@ -66,4 +66,16 @@ describe('Block' ,()=> { // in describe we write the test case for the requrired
             expect(minedBlock.hash.substring(0, minedBlock.difficulty)).toEqual('0'.repeat(minedBlock.difficulty));
         });
     });
+
+    describe('adjustDifficulty()', () =>{
+        it('raises the difficulty for a quickly mined block', () => {
+            expect(Block.adjustDifficulty({orignalBlock: block, timestamp: block.timestamp + MINE_RATE - 100
+            })).toEqual(block.difficulty+1);
+        });
+
+        it('lowers the difficulty for a slowly mined block',() =>{
+            expect(Block.adjustDifficulty({ orignalBlock : block, timestamp:block.timestamp + MINE_RATE +100
+            })).toEqual(block.difficulty-1);
+        });
+    })
 });

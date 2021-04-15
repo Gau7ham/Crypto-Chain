@@ -1,3 +1,4 @@
+const MINE_RATE = 1000; //1000  which is 1sec coz it is set in milisec
 const INITIAL_DIFFICULTY = 3;
 
 const GENESIS_DATA = {
@@ -9,4 +10,4 @@ const GENESIS_DATA = {
     data: []// it is an empty array
 }; 
 // difficulty added in genesis block will help the block that is generated to base the difficulty that came before.
-module.exports = {GENESIS_DATA};// It shares the GENESIS Object with other fiels
+module.exports = {GENESIS_DATA, MINE_RATE};// It shares the GENESIS Object with other fiels

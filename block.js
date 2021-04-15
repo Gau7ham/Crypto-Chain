@@ -1,4 +1,4 @@
-const {GENESIS_DATA}  = require('./config');
+const {GENESIS_DATA, MINE_RATE}  = require('./config');
 const cryptoHash = require('./crypto-hash');
 
 class Block{// WE are using constructor to have different initializn of data
@@ -31,6 +31,14 @@ class Block{// WE are using constructor to have different initializn of data
         return new this({timestamp,lastHash,data,difficulty,nonce,hash
             //cryptoHash(timestamp,lastHash, data, nonce, difficulty)//it creates a hash based on the timestamp lastHash and data. 
         });
+    }
+    
+    static adjustDifficulty({orignalBlock, timestamp}){
+        const{difficulty} = orignalBlock;
+        
+        if(timestamp - orignalBlock.timestamp > MINE_RATE) return difficulty -1;
+       
+        return difficulty + 1;
     }
 }
 
