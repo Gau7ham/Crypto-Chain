@@ -1,5 +1,7 @@
+const hexToBinary = require('hex-to-binary');
 const {GENESIS_DATA, MINE_RATE}  = require('./config');
 const cryptoHash = require('./crypto-hash');
+
 
 class Block{// WE are using constructor to have different initializn of data
     constructor({timestamp, lastHash, hash ,data, nonce ,difficulty}){ // When using curly braces we dont have to remember the order of parameters
@@ -17,16 +19,18 @@ class Block{// WE are using constructor to have different initializn of data
     }
 
     static mineBlock({lastBlock,data}){
+        const lastHash = lastBlock.hash;
         let hash, timestamp;
         //const timestamp = Date.now();
-        const lastHash = lastBlock.hash;
-        const {difficulty} = lastBlock;
+       
+        let {difficulty} = lastBlock;
         let nonce = 0;
         do{
             nonce++;
             timestamp = Date.now();
+            difficulty = Block.adjustDifficulty({orignalBlock: lastBlock , timestamp});
             hash = cryptoHash(timestamp, lastHash, data, nonce, difficulty)
-        } while(hash.substring(0,difficulty)!=='0'.repeat(difficulty));
+        } while(hexToBinary(hash).substring(0,difficulty)!=='0'.repeat(difficulty));
 
         return new this({timestamp,lastHash,data,difficulty,nonce,hash
             //cryptoHash(timestamp,lastHash, data, nonce, difficulty)//it creates a hash based on the timestamp lastHash and data. 
@@ -36,6 +40,7 @@ class Block{// WE are using constructor to have different initializn of data
     static adjustDifficulty({orignalBlock, timestamp}){
         const{difficulty} = orignalBlock;
         
+        if(difficulty <1) return 1;
         if(timestamp - orignalBlock.timestamp > MINE_RATE) return difficulty -1;
        
         return difficulty + 1;

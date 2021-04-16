@@ -1,3 +1,4 @@
+const hexToBinary = require('hex-to-binary');
 //const { genesis } = require("./block"); // it impors genesis function to const genesis
 const Block = require("./block"); // it imports the block Block class to the const Block  
 const {GENESIS_DATA, MINE_RATE} = require ('./config');// we use { GENESIS_DATA } bcoz it is exported as an object .
@@ -63,7 +64,13 @@ describe('Block' ,()=> { // in describe we write the test case for the requrired
             );
         });
         it('sets a `hash` that matches that matches the difficulty criteria', () => {
-            expect(minedBlock.hash.substring(0, minedBlock.difficulty)).toEqual('0'.repeat(minedBlock.difficulty));
+            expect(hexToBinary(minedBlock.hash).substring(0, minedBlock.difficulty)).toEqual('0'.repeat(minedBlock.difficulty));
+        });
+
+        it('adjusts the difficulty', () =>{
+            const possibleResults = [lastBlock.difficulty+1, lastBlock.difficulty-1];
+
+            expect(possibleResults.includes(minedBlock.difficulty)).toBe(true);
         });
     });
 
@@ -76,6 +83,12 @@ describe('Block' ,()=> { // in describe we write the test case for the requrired
         it('lowers the difficulty for a slowly mined block',() =>{
             expect(Block.adjustDifficulty({ orignalBlock : block, timestamp:block.timestamp + MINE_RATE +100
             })).toEqual(block.difficulty-1);
+        });
+
+        it('has a lower limit of 1', () => {
+            block.difficulty = -1;
+
+            expect(Block.adjustDifficulty({orignalBlock: block})).toEqual(1);
         });
     })
 });
