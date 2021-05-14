@@ -1,9 +1,17 @@
 const bodyParser = require('body-parser');
 const express = require('express');
+const request = require('request');
 const Blockchain = require('./blockchain');
+const PubSub = require('./pubsub');
 
 const app = express();
 const blockchain = new Blockchain();
+const pubsub = new PubSub({ blockchain });
+
+const DEFAULT_PORT = 3000;
+const ROOT_NODE_ADDRESS = `http://locahost:${DEFAULT_PORT}`;
+
+//setTimeout(() => pubsub.broadcastChain(),1000);
 
 app.use(bodyParser.json());
 
@@ -16,9 +24,32 @@ app.post('/api/mine', (req, res) => {
 
     blockchain.addBlock({ data });
 
+    pubsub.broadcastChain();
+
     res.redirect('/api/blocks');
 });
 
-const PORT = 3000;
+const syncChains = () => {
+    request({ url: `${ROOT_NODE_ADDRESS}/api/blocks`}, (error, response, body)=>{
+        if(!error && response.statusCode ===200) {
+            const rootChain = JSON.parse(body);
+            console.log('replac chain on a sync with', rootChain);
+            blockchain.replaceChain(rootChain);
+        }
+    });
+};
 
-app.listen(PORT ,() => console.log(`listening at localhost:${PORT}`));
+let PEER_PORT;// it creates peer port ie it changes the port no of other instances npm run dev-peer (use postman post with http://localhost:3000/api/mine) 
+
+if(process.env.GENERATE_PEER_PORT === 'true'){
+    PEER_PORT = DEFAULT_PORT + Math.ceil(Math.random() * 1000);
+}
+const PORT = PEER_PORT || DEFAULT_PORT;
+
+app.listen(PORT ,() => {
+    console.log(`listening at localhost:${PORT}`);
+
+    
+        syncChains();
+    
+});
