@@ -10,4 +10,6 @@ const GENESIS_DATA = {
     data: []// it is an empty array
 }; 
 // difficulty added in genesis block will help the block that is generated to base the difficulty that came before.
-module.exports = {GENESIS_DATA, MINE_RATE};// It shares the GENESIS Object with other fiels
+
+const STARTING_BALANCE = 1000;
+module.exports = {GENESIS_DATA, MINE_RATE, STARTING_BALANCE};// It shares the GENESIS Object with other fiels

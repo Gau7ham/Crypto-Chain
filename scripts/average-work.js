@@ -1,5 +1,5 @@
 // this is  script to check how the proof of work difficulty works in binary 
-const Blockchain = require('./blockchain');
+const Blockchain = require('../blockchain');
 
 const blockchain = new Blockchain();
 
