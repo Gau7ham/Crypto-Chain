@@ -2,7 +2,7 @@ const hexToBinary = require('hex-to-binary');
 //const { genesis } = require("./block"); // it impors genesis function to const genesis
 const Block = require("./block"); // it imports the block Block class to the const Block  
 const {GENESIS_DATA, MINE_RATE} = require ('../config');// we use { GENESIS_DATA } bcoz it is exported as an object .
-const cryptoHash = require('../util/crypto-hash');
+const {cryptoHash} = require('../util');
 
 describe('Block' ,()=> { // in describe we write the test case for the requrired tests (testing  block class)
     const timestamp = 2000;
